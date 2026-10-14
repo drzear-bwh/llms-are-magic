@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1E1A3A">
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="LLMs Are Magic: a short talk on how large language models work, for your phone.">
+<title>LLMs Are Magic</title>
+<link rel="icon" href="media/tophat.svg" type="image/svg+xml">
+<link rel="preload" href="vendor/fonts/instrument-sans.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<main class="gate" id="gate" hidden>
+  <p class="kicker">A talk for your phone</p>
+  <h1>LLMs Are Magic</h1>
+  <form id="gateForm">
+    <label for="pw">Password</label>
+    <input id="pw" type="text" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" enterkeyhint="go" required>
+    <button class="btn primary block" id="gateBtn">Open</button>
+  </form>
+  <p class="small" id="gateMsg" aria-live="polite">David will tell you the password. Capitals don't matter.</p>
+</main>
+<noscript><p class="gate">This site needs JavaScript.</p></noscript>
+<script type="module" src="unlock.js"></script>
+</body>
+</html>
