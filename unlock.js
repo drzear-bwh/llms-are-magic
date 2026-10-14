@@ -3,7 +3,7 @@
 // {path: text} holding the app shell, the scripts and the data. The key is
 // PBKDF2-SHA-256 of the password (trimmed, lower case). Once a password works,
 // the raw key is kept on this phone so a reload doesn't ask again.
-const ITER = 600000, SAVED = "lam-key";
+const ITER = 600000, SAVED = "hq-key";
 const $ = (id) => document.getElementById(id);
 const toB64 = (u8) => btoa(String.fromCharCode(...u8));
 const fromB64 = (s) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
@@ -26,14 +26,20 @@ async function open(key) {
   return JSON.parse(new TextDecoder().decode(plain));
 }
 
-// Swap the gate for the app and run its modules from blob URLs.
+// Swap the gate for the app and run its modules from blob URLs. Each module's
+// imports ("./x.js") are rewritten to the blob URL of x, dependencies first.
 function start(files) {
   globalThis.__LAM_FILES = files;
   document.body.innerHTML = files["shell.html"];
-  const mod = (src) => URL.createObjectURL(new Blob([src], { type: "text/javascript" }));
-  const ui = mod(files["js/ui.js"]);
-  const scenes = mod(files["js/scenes.js"].replaceAll('"./ui.js"', `"${ui}"`));
-  return import(mod(files["js/app.js"].replaceAll('"./ui.js"', `"${ui}"`).replaceAll('"./scenes.js"', `"${scenes}"`)));
+  const urls = {};
+  const load = (name) => {
+    if (urls[name]) return urls[name];
+    const src = files[`js/${name}`];
+    if (src == null) throw new Error(`missing module js/${name}`);
+    const code = src.replace(/from "\.\/([a-z0-9]+\.js)"/g, (_, dep) => `from "${load(dep)}"`);
+    return (urls[name] = URL.createObjectURL(new Blob([code], { type: "text/javascript" })));
+  };
+  return import(load("app.js"));
 }
 
 const wrong = (e) => e?.name === "OperationError";
@@ -42,14 +48,14 @@ $("gateForm").addEventListener("submit", async (e) => {
   e.preventDefault();
   const btn = $("gateBtn"), msg = $("gateMsg");
   btn.disabled = true;
-  msg.textContent = "Opening…";
+  msg.textContent = "Looking up your booking…";
   try {
     const key = await derive($("pw").value);
     const files = await open(key);
     try { localStorage.setItem(SAVED, toB64(new Uint8Array(await crypto.subtle.exportKey("raw", key)))); } catch { /* private mode */ }
     await start(files);
   } catch (err) {
-    msg.textContent = wrong(err) ? "That's not it. Try again." : "The site didn't load. Check your connection and try again.";
+    msg.textContent = wrong(err) ? "We can't find that booking. Try again." : "The hotel didn't load. Check your connection and try again.";
     btn.disabled = false;
   }
 });

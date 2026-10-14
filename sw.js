@@ -1,8 +1,8 @@
 // Precache the whole show so it keeps working if the hotel Wi-Fi drops.
 // Bump VERSION on every deploy so phones pick up the new files. Precaching
 // bypasses the HTTP cache so a redeploy can't store stale copies.
-const VERSION = "lam-v55";
-const FILES = ["./","index.html","unlock.js","site.bin","css/style.css","media/tophat.svg","vendor/fonts/instrument-sans.woff2","vendor/fonts/jetbrains-mono.woff2"];
+const VERSION = "hq-v2";
+const FILES = ["./","index.html","unlock.js","site.bin","css/style.css","media/moon.svg","vendor/fonts/instrument-sans.woff2","vendor/fonts/jetbrains-mono.woff2","vendor/fonts/Silkscreen-Regular.ttf"];
 
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(VERSION).then((c) => c.addAll(FILES.map((f) => new Request(f, { cache: "reload" })))).then(() => self.skipWaiting()));
