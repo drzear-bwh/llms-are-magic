@@ -189,6 +189,7 @@ body.verify .v { outline: 2px dashed #f0f; outline-offset: 2px; }
 .btn.primary { background: var(--vermilion); border-color: var(--vermilion); color: #fff; }
 .btn.brass { background: var(--brass); border-color: var(--brass); color: var(--indigo); }
 .btn.block { width: 100%; }
+.floors { display: grid; gap: 8px; margin-top: 12px; }
 .btn:disabled { opacity: .45; }
 .row { display: flex; gap: 10px; flex-wrap: wrap; }
 .row > .btn { flex: 1 1 0; }
