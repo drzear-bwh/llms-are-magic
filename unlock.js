@@ -55,7 +55,7 @@ $("gateForm").addEventListener("submit", async (e) => {
     try { localStorage.setItem(SAVED, toB64(new Uint8Array(await crypto.subtle.exportKey("raw", key)))); } catch { /* private mode */ }
     await start(files);
   } catch (err) {
-    msg.textContent = wrong(err) ? "We can't find that booking. Try again." : "The hotel didn't load. Check your connection and try again.";
+    msg.textContent = wrong(err) ? "Error 404: booking not found. Try again." : "The hotel didn't load. Check your connection and try again.";
     btn.disabled = false;
   }
 });
