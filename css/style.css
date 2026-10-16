@@ -41,18 +41,42 @@ button { cursor: pointer; }
 /* ---------- shell: status line, picture, dialog, icon bar ---------- */
 #app { height: 100dvh; display: flex; flex-direction: column; max-width: 560px; margin: 0 auto; background: #000; }
 .status {
-  display: flex; align-items: center; gap: 10px;
+  display: flex; align-items: center; gap: 8px; flex: none;
   padding: calc(env(safe-area-inset-top) + 4px) 6px 4px 10px;
   background: #fff; color: #000; font: 14px/1.2 var(--pixel);
+  transition: margin-top .25s ease;
 }
+/* scrolled down: the header slides away so the picture and the text get the room */
+#app.compact .status { margin-top: calc(-1 * var(--hh, 46px)); }
+.back-btn { flex: none; width: 34px; height: 34px; margin-left: -4px; border: 0; background: #AAAAAA; box-shadow: var(--bevel); font: 700 24px/1 var(--sans); color: #000; padding: 0; }
+.back-btn:disabled { opacity: .35; }
+/* explore: what you've found, one slot per room */
+.items { display: flex; gap: 2px; flex: none; }
+.items:empty { display: none; }
+.items button { width: 22px; height: 22px; padding: 0; border: 0; background: #E4E4E4; box-shadow: inset 1px 1px 0 #AAAAAA; display: grid; place-items: center; }
+.items button.got { background: #FFFFFF; box-shadow: none; }
+.items button:not(.got) { cursor: default; }
+.items canvas { width: 20px; height: 20px; image-rendering: pixelated; }
+.items button:not(.got) canvas { opacity: .18; filter: grayscale(1); }
+.menu-score { font: 16px var(--pixel); color: #AA0000; margin: 4px 0 0; }
 .where { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .score { white-space: nowrap; }
 .score.flash { animation: scoreflash .8s steps(2) 2; }
 @keyframes scoreflash { 50% { background: #AA0000; color: #fff; } }
 .menu-btn { flex: none; width: 40px; height: 34px; border: 0; background: #AAAAAA; box-shadow: var(--bevel); font: 700 22px/1 var(--sans); }
 
-.stage { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; padding-bottom: 8px; }
-.picture { position: relative; background: #000; }
+.picture { position: relative; background: #000; flex: none; }
+.stage-wrap { flex: 1; min-height: 0; position: relative; display: flex; }
+.stage { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; padding-bottom: calc(env(safe-area-inset-bottom) + 8px); overscroll-behavior: contain; }
+/* "there's more below": a see-through arrow over the bottom of the text */
+.more {
+  position: absolute; left: 50%; bottom: calc(env(safe-area-inset-bottom) + 10px); transform: translateX(-50%);
+  width: 52px; height: 52px; border-radius: 50%; border: 0; padding: 0;
+  background: rgba(170,0,0,.72); color: #fff; font: 22px/52px var(--sans);
+  box-shadow: 0 2px 10px rgba(0,0,0,.35); animation: bob 1.4s ease-in-out infinite;
+}
+@keyframes bob { 50% { transform: translate(-50%, 6px); } }
+@media (prefers-reduced-motion: reduce) { .more { animation: none; } .status { transition: none; } }
 #pic { display: block; width: 100%; aspect-ratio: 16 / 10; image-rendering: pixelated; image-rendering: crisp-edges; touch-action: manipulation; cursor: pointer; }
 
 /* the message window over the picture */
@@ -85,12 +109,7 @@ button { cursor: pointer; }
 .dnav { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 18px; font: 16px var(--pixel); }
 .dnav .nav.next { min-width: 110px; }
 
-/* bottom bars */
-.controls, .verbs {
-  display: flex; align-items: center; gap: 8px;
-  padding: 8px 8px calc(env(safe-area-inset-bottom) + 8px);
-  background: #AAAAAA; box-shadow: inset 0 2px 0 #fff;
-}
+/* buttons for stepping through cards */
 .nav {
   min-height: 50px; border: 0; background: #AAAAAA; color: #000; box-shadow: var(--bevel);
   font: 18px/1 var(--pixel);
@@ -99,17 +118,15 @@ button { cursor: pointer; }
 .nav.prev { width: 54px; font: 700 28px/1 var(--sans); }
 .nav.next { min-width: 130px; padding: 0 16px; background: #AA0000; color: #fff; box-shadow: inset 2px 2px 0 #FF5555, inset -2px -2px 0 #000; }
 .nav:disabled { opacity: .4; }
-.dots { flex: 1; display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
+/* the guided tour's Next: at the end of the card, once you've done its task */
+.tour-next { display: flex; align-items: center; gap: 10px; margin: 6px 8px 8px; }
+.tour-next .nav.next { flex: 1; min-height: 56px; font-size: 20px; }
+.tour-next .wait { flex: 1; margin: 0; padding: 14px 8px; text-align: center; font: 15px/1.3 var(--pixel); color: #FFFF55; }
+.dots { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
 .dots i { width: 9px; height: 9px; background: #555; }
 .dots i.on { background: #AA0000; }
-.verbs .hint { flex: 1; padding: 0 6px; font: 15px/1.3 var(--pixel); color: #000; }
-.verbs button {
-  flex: 0 0 88px; min-height: 56px; border: 0; background: #AAAAAA; box-shadow: var(--bevel);
-  display: grid; justify-items: center; gap: 3px; padding: 6px 2px; font: 14px/1 var(--pixel); color: #000;
-}
-.verbs button canvas { width: 24px; height: 24px; image-rendering: pixelated; }
 
-/* ---------- overlays: menu, bag ---------- */
+/* ---------- overlays: menu ---------- */
 .overlay { position: fixed; inset: 0; z-index: 40; background: rgba(0,0,0,.82); overflow-y: auto; }
 .window {
   background: #fff; color: #000; margin: calc(env(safe-area-inset-top) + 5vh) auto 24px; width: calc(100% - 20px); max-width: 500px;
@@ -128,9 +145,6 @@ button { cursor: pointer; }
 .bill .a { font: 13px var(--sans); color: #555; display: block; font-weight: 400; }
 .bill li.here .t { color: #AA0000; }
 .linkish { background: none; border: 0; color: #555; text-decoration: underline; min-height: 44px; padding: 0; font-size: 15px; }
-.baglist { display: grid; gap: 8px; margin: 8px 0 12px; }
-.baglist button { display: flex; align-items: center; gap: 14px; min-height: 56px; padding: 8px 12px; border: 0; background: #AAAAAA; box-shadow: var(--bevel); font: 700 18px var(--sans); text-align: left; }
-.baglist canvas { width: 40px; height: 36px; image-rendering: pixelated; }
 
 /* ---------- titles in the pixel font ---------- */
 .title { font: 24px/1.2 var(--pixel); color: #AA0000; margin: 2px 0 8px; letter-spacing: 0; }
@@ -482,7 +496,7 @@ input[type="range"] { width: 100%; height: 48px; accent-color: var(--vermilion);
 
 /* Phone turned sideways (the agent's screen): give the dialog the whole screen. */
 @media (orientation: landscape) and (max-height: 500px) {
-  .status, .controls, .verbs, .picture, .here { display: none !important; }
+  .status, .picture, .here, .more { display: none !important; }
 }
 
 /* password gate = check-in (locked build only, see locked/unlock.js) */
@@ -500,3 +514,22 @@ label.btn { cursor: pointer; }
 .patches canvas { width: 30px; height: 30px; image-rendering: pixelated; border: 1px solid #000; }
 .receipt .plate { width: 192px; margin: 6px auto; border-width: 1px; }
 .receipt .r-hint { font-weight: 400; font-style: italic; color: #555; }
+
+/* "Tell me more": the details behind a card, folded away */
+.why { margin: 14px 0 0; border-top: 1px dotted #AAAAAA; padding-top: 6px; }
+.why > summary { list-style: none; cursor: pointer; min-height: 40px; display: flex; align-items: center; gap: 8px; font: 15px var(--pixel); color: #0000AA; }
+.why > summary::-webkit-details-marker { display: none; }
+.why > summary::before { content: "+"; display: inline-grid; place-items: center; width: 22px; height: 22px; background: #0000AA; color: #fff; font: 700 16px/1 var(--sans); }
+.why[open] > summary::before { content: "–"; }
+.why > :not(summary) { font-size: 16px; }
+.why .small { font-size: 14px; }
+.dialog.dark .why > summary { color: #FFFF55; }
+.dialog.dark .why > summary::before { background: #FFFF55; color: #000; }
+
+/* check-in: pick the guest that looks like you */
+.looks { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 8px; }
+.looks button { border: 0; background: #E4E4E4; box-shadow: var(--bevel); padding: 6px 0 4px; display: grid; place-items: center; min-height: 72px; }
+.looks button[aria-pressed="true"] { background: #FFFF55; box-shadow: var(--bevel-in); outline: 2px solid #AA0000; }
+.looks canvas { width: 33px; height: 87px; image-rendering: pixelated; }
+.skip { display: block; margin: 8px auto 0; }
+/* the bill: what you missed, as links */
