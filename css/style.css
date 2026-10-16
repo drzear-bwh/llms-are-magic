@@ -54,10 +54,10 @@ button { cursor: pointer; }
 .items { display: flex; gap: 2px; flex: none; }
 .items:empty { display: none; }
 .items button { width: 22px; height: 22px; padding: 0; border: 0; background: #E4E4E4; box-shadow: inset 1px 1px 0 #AAAAAA; display: grid; place-items: center; }
-.items button.got { background: #FFFFFF; box-shadow: none; }
-.items button:not(.got) { cursor: default; }
+.items button.have { background: #555555; box-shadow: none; } /* dark, so white icons (charger, rabbit) show */
+.items button:not(.have) { cursor: default; }
 .items canvas { width: 20px; height: 20px; image-rendering: pixelated; }
-.items button:not(.got) canvas { opacity: .18; filter: grayscale(1); }
+.items button:not(.have) canvas { opacity: .18; filter: grayscale(1); }
 .menu-score { font: 16px var(--pixel); color: #AA0000; margin: 4px 0 0; }
 .where { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .score { white-space: nowrap; }
@@ -450,7 +450,7 @@ input[type="range"] { width: 100%; height: 48px; accent-color: var(--vermilion);
 
 /* ---------- training deck (Scene 6) ---------- */
 .trainer canvas { display: block; width: 100%; cursor: pointer; }
-.trainer .status { font: 13px/1.3 var(--mono); color: var(--brass-light); margin: 6px 0 10px; min-height: 2.6em; font-variant-numeric: tabular-nums; }
+.trainer .train-status { font: 13px/1.3 var(--mono); color: var(--brass-light); margin: 6px 0 10px; min-height: 2.6em; font-variant-numeric: tabular-nums; }
 .howsteps { margin: 6px 0 10px; padding-left: 24px; }
 .howsteps li { margin: 4px 0; }
 .howsteps li::marker { color: var(--brass-light); font-weight: 700; }
